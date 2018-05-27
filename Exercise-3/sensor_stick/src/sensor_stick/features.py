@@ -10,7 +10,7 @@ def rgb_to_hsv(rgb_list):
     return hsv_normalized
 
 
-def compute_color_histograms(cloud, using_hsv=False):
+def compute_color_histograms(cloud, using_hsv=False, bins = 32):
 
     # Compute histograms for the clusters
     point_colors_list = []
@@ -34,18 +34,19 @@ def compute_color_histograms(cloud, using_hsv=False):
         channel_3_vals.append(color[2])
 
     # TODO: Compute histograms
-    hist_1 = np.histogram( channel_1_vals, bins = 32, range = ( 0, 256 ) )
-    hist_2 = np.histogram( channel_2_vals, bins = 32, range = ( 0, 256 ) )
-    hist_3 = np.histogram( channel_3_vals, bins = 32, range = ( 0, 256 ) )
+    hist_1 = np.histogram( channel_1_vals, bins = bins, range = ( 0, 256 ) )
+    hist_2 = np.histogram( channel_2_vals, bins = bins, range = ( 0, 256 ) )
+    hist_3 = np.histogram( channel_3_vals, bins = bins, range = ( 0, 256 ) )
 
     # TODO: Concatenate and normalize the histograms
     hist = np.concatenate( ( hist_1[ 0 ], hist_2[ 0 ], hist_3[ 0 ] ) ).astype( np.float64 )
-    norm = hist / np.sum( hist )
+    hist_sum = np.sum( hist )
+    norm = hist / hist_sum if hist_sum != 0 else hist
 
     return norm
 
 
-def compute_normal_histograms(normal_cloud):
+def compute_normal_histograms(normal_cloud, bins = 32):
     norm_x_vals = []
     norm_y_vals = []
     norm_z_vals = []
@@ -58,12 +59,13 @@ def compute_normal_histograms(normal_cloud):
         norm_z_vals.append(norm_component[2])
 
     # TODO: Compute histograms of normal values (just like with color)
-    hist_1 = np.histogram( norm_x_vals, bins = 10, range = ( 0, 1 ) )
-    hist_2 = np.histogram( norm_y_vals, bins = 10, range = ( 0, 1 ) )
-    hist_3 = np.histogram( norm_z_vals, bins = 10, range = ( 0, 1 ) )
+    hist_1 = np.histogram( norm_x_vals, bins = bins, range = ( 0, 1 ) )
+    hist_2 = np.histogram( norm_y_vals, bins = bins, range = ( 0, 1 ) )
+    hist_3 = np.histogram( norm_z_vals, bins = bins, range = ( 0, 1 ) )
 
     # TODO: Concatenate and normalize the histograms
     hist = np.concatenate( ( hist_1[ 0 ], hist_2[ 0 ], hist_3[ 0 ] ) ).astype( np.float64 )
-    norm = hist / np.sum( hist )
+    hist_sum = np.sum( hist )
+    norm = hist / hist_sum if hist_sum != 0 else hist
 
     return norm
